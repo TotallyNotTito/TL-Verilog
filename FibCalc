@@ -1,0 +1,55 @@
+\m4_TLV_version 1d: tl-x.org
+\SV
+
+   // =========================================
+   // Welcome!  Try the tutorials via the menu.
+   // =========================================
+
+   // Default Makerchip TL-Verilog Code Template
+   
+   // Macro providing required top-level module definition, random
+   // stimulus support, and Verilator config.
+   m4_makerchip_module   // (Expanded in Nav-TLV pane.)
+   m4_include_lib(['https://raw.githubusercontent.com/stevehoover/LF-Building-a-RISC-V-CPU-Core/main/lib/calc_viz.tlv'])
+   /* verilator lint_on WIDTH */
+\TLV
+   $reset = *reset;
+   $val1[31:0] = >>1$out;
+   $val2[31:0] = {28'b0, $val2_rand[3:0]}; 
+   
+   $sum[31:0] = $val1[31:0] + $val2[31:0];
+   $diff[31:0] = $val1 - $val2;
+   $prod[31:0] = $val1 * $val2;
+   $quot[31:0] = $val1 / $val2;
+   
+   $out[31:0] = $reset ? 32'b0 :
+                $op[1:0] == 2'b00 ? $sum :
+                $op == 2'b01 ? $diff :
+                $op == 2'b10 ? $prod :
+                               $quot;  //default, same as 2'b11
+
+   //$out = ($in1 ^ $in2) | $carry_in;  //coding an inverter (not gate) in Makerchip
+   //$carry_out = ($and1 | $and2) | $carry_in;
+   
+   //full adder. Combining expressions
+   /*
+   $xor = $in1 ^ $in2;
+   $out = $xor ^ $carry_in;
+   $and1 = $carry_in && $xor;
+   $and2 = $in2 && $in1;
+   $carry_out = $and1 || $and2;
+   */
+   
+   //outcome is unsigned
+   //$out[10:0] = $in[6:0] * $in2[6:0];
+   
+   //$out[31:0] = $op[1:0] ?
+   
+   
+
+   // Assert these to end simulation (before Makerchip cycle limit).
+   *passed = *cyc_cnt > 40;
+   *failed = 1'b0;
+   m4+calc_viz()
+\SV
+   endmodule
